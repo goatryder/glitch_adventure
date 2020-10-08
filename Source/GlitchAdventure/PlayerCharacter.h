@@ -65,6 +65,9 @@ public:
 	void OnAttack();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float AttackDelay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AttackTimeout;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -73,5 +76,10 @@ public:
 	bool CanAttack;
 
 	// Bullet
+	UPROPERTY(EditAnywhere)
+		UClass* BPFireball;
+
+	UPROPERTY(EditAnywhere)
+		float BulletLaunchImpulse;
 
 }; 

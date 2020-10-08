@@ -5,6 +5,9 @@
 
 #include "Components/CapsuleComponent.h"
 
+#include "Bullet.h"
+#include "Components/SphereComponent.h"
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -12,6 +15,7 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Set Default Values
+	AttackDelay = 0.8f;
 	AttackTimeout = 1.5f;
 	TimeSinceLastStrike = 0.f;
 	CanAttack = true;
@@ -25,7 +29,7 @@ APlayerCharacter::APlayerCharacter()
 
 	TriggerCapsule->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
 
-
+	BulletLaunchImpulse = 20000.f;
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +43,22 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TimeSinceLastStrike += DeltaTime;
+
+	if (TimeSinceLastStrike > AttackTimeout) {
+
+
+		AttackStarted = false;
+
+		if (!CanAttack) {
+
+			CanAttack = true;
+			TimeSinceLastStrike = 0;
+
+		}
+
+	}
 
 }
 
@@ -148,6 +168,28 @@ void APlayerCharacter::Pitch(float Val)
 
 void APlayerCharacter::OnAttack()
 {
+
+	if (CanAttack) {
+
+		AttackStarted = true;
+
+		FVector fwd = GetActorForwardVector();
+		FVector nozzle = GetMesh()->GetBoneLocation("ArmR3");
+
+		nozzle += fwd * 55.f;
+
+		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(BPFireball, nozzle, RootComponent->GetComponentRotation());
+
+		CanAttack = false;
+
+		if (bullet) {
+			
+			bullet->CollisionSphere->AddImpulse(fwd * BulletLaunchImpulse);
+
+		}
+
+	}
+
 }
 
 
