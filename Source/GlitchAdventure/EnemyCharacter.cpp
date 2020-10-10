@@ -18,7 +18,7 @@ AEnemyCharacter::AEnemyCharacter()
 	AttackTimeout = 1.5f;
 	TimeSinceLastAttack = 0.f;
 
-	BulletLaunchImpulse = 10000.f;
+	BulletLaunchImpulse = 7000.f;
 
 	SightSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SightSphere"));
 	SightSphere->SetupAttachment(RootComponent);
@@ -58,7 +58,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 	}
 
-	/*
+	
 	if (!IsInSightRange(distanceToPlayer)) {
 
 		IsAttacking = false;
@@ -66,13 +66,13 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		return;
 
 	}
-	*/
+	
 
-	IsAttacking = IsInSightRange(distanceToPlayer);
+	// IsAttacking = IsInSightRange(distanceToPlayer);
 
 	if (IsInAttackRange(distanceToPlayer) && !IsDead) {
 
-		if (TimeSinceLastAttack == 0.f && IsAttacking) {
+		if (TimeSinceLastAttack == 0.f) {
 
 			Attack(PlayerREF);
 
@@ -106,12 +106,42 @@ void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void AEnemyCharacter::Attack(AActor* AttackTarget)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("Enemy is Attacking the Player"));
+	if (BPBullet) {
+
+		IsAttacking = true;
+
+		FVector fwd = GetActorForwardVector();
+		FVector nozzle = GetMesh()->GetBoneLocation("Neck1");
+
+		nozzle += fwd * 55;
+
+		FVector ToOpponent = AttackTarget->GetActorLocation() - nozzle;
+
+		ToOpponent.Normalize();
+
+		ABullet* bullet = GetWorld()->SpawnActor<ABullet>(BPBullet, nozzle, RootComponent->GetComponentRotation());
+
+		if (bullet) {
+
+			bullet->CollisionSphere->AddImpulse(fwd * BulletLaunchImpulse);
+
+		}
+
+	}
 
 }
 
 float AEnemyCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInsigator, AActor* DamageCauser)
 {
-	return 0.0f;
+
+	Health -= Damage;
+
+	if (Health <= 0.f) {
+
+		IsDead = true;
+
+	}
+
+	return Damage;
 }
 

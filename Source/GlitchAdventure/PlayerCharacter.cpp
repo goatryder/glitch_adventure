@@ -7,6 +7,9 @@
 
 #include "Bullet.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+// #include "PickUpItem.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -202,7 +205,19 @@ void APlayerCharacter::OnAttack()
 
 float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInsigator, AActor* DamageCauser)
 {
-	return 0.0f;
+	HP -= Damage;
+
+	if (HP <= 0.f) {
+
+		HP = 0;
+
+		Dead = true;
+
+		// UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
+
+	}
+
+	return Damage;
 }
 
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
