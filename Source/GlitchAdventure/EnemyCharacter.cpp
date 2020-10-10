@@ -26,12 +26,16 @@ AEnemyCharacter::AEnemyCharacter()
 	AttackRangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AttackRangeSphere"));
 	AttackRangeSphere->SetupAttachment(RootComponent);
 
+	IsAttacking = false;
+
 }
 
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerREF = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	
 }
 
@@ -39,6 +43,52 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// calculate player location
+	FVector distanceDifference = PlayerREF->GetActorLocation() - GetActorLocation();
+	
+	float distanceToPlayer = distanceDifference.Size();
+
+	FRotator toPlayerRotation = distanceDifference.Rotation();
+	toPlayerRotation.Pitch = 0;
+
+	if (!IsDead) {
+
+		RootComponent->SetWorldRotation(toPlayerRotation);
+
+	}
+
+	/*
+	if (!IsInSightRange(distanceToPlayer)) {
+
+		IsAttacking = false;
+
+		return;
+
+	}
+	*/
+
+	IsAttacking = IsInSightRange(distanceToPlayer);
+
+	if (IsInAttackRange(distanceToPlayer) && !IsDead) {
+
+		if (TimeSinceLastAttack == 0.f && IsAttacking) {
+
+			Attack(PlayerREF);
+
+		}
+
+		TimeSinceLastAttack += DeltaTime;
+		
+		if (TimeSinceLastAttack > AttackTimeout) {
+
+			TimeSinceLastAttack = 0.f;
+
+		}
+
+		return;
+
+	}
 
 }
 
@@ -55,6 +105,9 @@ void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AEnemyCharacter::Attack(AActor* AttackTarget)
 {
+
+	UE_LOG(LogTemp, Warning, TEXT("Enemy is Attacking the Player"));
+
 }
 
 float AEnemyCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInsigator, AActor* DamageCauser)

@@ -87,7 +87,7 @@ void APlayerCharacter::MoveForward(float Val)
 		if (Val == 0.f) {
 
 			IsWalking = false;
-
+			// StrafeRotated = false;
 		}
 
 		else {
@@ -137,9 +137,18 @@ void APlayerCharacter::MoveRight(float Val)
 
 			}
 
-			StrafeRotated = true;*/
+			StrafeRotated = true;
 
-			//IsWalking = true;
+			if (!StrafeRotated)
+				LastRightInputValue = Val;
+				RootComponent->SetWorldRotation(FRotator(0.f, Val * StrafeRightRotateAngle, 0.f));
+				StrafeRotated = true;
+
+			if (LastRightInputValue != Val)
+				StrafeRotated = false;*/
+
+
+			IsWalking = true;
 
 			FVector right = GetActorRightVector();
 			AddMovementInput(right, Val);
@@ -158,11 +167,9 @@ void APlayerCharacter::Yaw(float Val)
 
 void APlayerCharacter::Pitch(float Val)
 {	
-	if (Val != 0.f)
-		UE_LOG(LogTemp, Warning, TEXT("Pitch %f"), Val);
-	//AddControllerPitchInput(200.f * Val * GetWorld()->GetDeltaSeconds());
-	APlayerController* const PC = CastChecked<APlayerController>(Controller);
-	PC->AddPitchInput(Val);
+	AddControllerPitchInput(200.f * Val * GetWorld()->GetDeltaSeconds());
+	//APlayerController* const PC = CastChecked<APlayerController>(Controller);
+	//PC->AddPitchInput(Val);
 
 }
 

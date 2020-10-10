@@ -52,8 +52,9 @@ public:
 	void Yaw(float Val);
 	void Pitch(float Val);
 
-	//float StrafeRightRotateAngle = 90.f;
-	//bool StrafeRotated = false;
+	/*float StrafeRightRotateAngle = 90.f;
+	bool StrafeRotated = false;
+	float LastRightInputValue = 0.f;*/
 
 	// TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInsigator, AActor* DamageCauser) override;
