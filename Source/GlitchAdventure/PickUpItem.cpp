@@ -12,7 +12,7 @@ APickUpItem::APickUpItem()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
+	Mesh->SetupAttachment(RootComponent);
 
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
 	CollisionSphere->SetupAttachment(Mesh);

@@ -9,7 +9,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-// #include "PickUpItem.h"
+#include "PickUpItem.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -222,4 +222,24 @@ float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+
+	if (Cast<APickUpItem>(OtherActor)) {
+
+		if (OtherActor->ActorHasTag("Key")) {
+
+			Score += 200.f;
+
+			HasKey = true;
+
+		}
+		else {
+
+			Score += 100.f;
+
+		}
+
+		OtherActor->Destroy();
+
+	}
+
 }
