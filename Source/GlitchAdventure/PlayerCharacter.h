@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+
 UCLASS()
 class GLITCHADVENTURE_API APlayerCharacter : public ACharacter
 {
